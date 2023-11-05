@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePokemonDto, UpdatePokemonDto } from './dto/pokemon.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Pokemon } from './entities/pokemon.entity';
 import { Pokemon as Poke } from './types/pokemon.type';
 import { Model } from 'mongoose';
-import axios from 'axios';
 import { Sprites } from './entities/sprite.entity';
 import { Type } from './entities/type.entity';
 import { Move } from './entities/nove.entity';
 import { Stat } from './entities/stat.entity';
+import axios from 'axios';
 
 @Injectable()
 export class PokemonService {
@@ -25,19 +24,33 @@ export class PokemonService {
     private readonly moveModel: Model<Move>,
   ) {}
 
-  async create(createPokemonDto: CreatePokemonDto) {
-    const p = await this.pokeModel.create({ name: 'p' });
-    return p;
+  async findAll(): Promise<Pokemon[]> {
+    try {
+      const pokemon = await this.pokeModel.find().lean().exec();
+      return pokemon;
+    } catch (error) {
+      console.log('ERROR FIND ALL');
+      console.log(error);
+    }
   }
 
-  async findAll() {
+  async findOne(id: string): Promise<Pokemon> {
+    try {
+      const poke = await this.pokeModel.findById(id).lean().exec();
+      return poke;
+    } catch (error) {
+      console.log('ERROR FIND BY ID');
+      console.log(error);
+    }
+  }
+
+  private async _seed() {
     const url = 'https://pokeapi.co/api/v2/pokemon?limit=100';
     const { data } = await axios.get(url);
     const pokPrm = data.results.map((d) => axios.get(d.url));
     const res = await Promise.all(pokPrm);
     const pokeData = res.map((r) => r.data) as Poke[];
-    // const idx = await this.pokeModel.listIndexes();
-    // console.log(idx);
+
     for (let p of pokeData) {
       const moves = [];
       for (let m of p.moves) {
@@ -56,7 +69,6 @@ export class PokemonService {
           });
         }
       }
-      // const m = await Promise.all(moves);
       const types = [];
       for (let t of p.types) {
         const type = await this.typeModel.findOne({ name: t.type.name }).exec();
@@ -75,7 +87,6 @@ export class PokemonService {
           });
         }
       }
-      // const types = await Promise.all(typesPrm);
       const stats = p.stats.reduce((acc, curr) => {
         acc[curr.stat.name] = curr.base_stat;
         acc['name'] = p.name;
@@ -118,6 +129,7 @@ export class PokemonService {
       console.log(pDb);
       if (pDb) {
         console.log('DUP');
+        continue;
       } else {
         const prm = this.pokeModel.create({
           moves,
@@ -134,19 +146,9 @@ export class PokemonService {
       const resDb = await Promise.all(pokeDbPrm);
       console.log(resDb);
     }
-
-    return 'p';
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} pokemon`;
-  }
-
-  update(id: number, updatePokemonDto: UpdatePokemonDto) {
-    return `This action updates a #${id} pokemon`;
-  }
-
-  async remove() {
+  private async _clearDb() {
     const prm = [
       this.moveModel.deleteMany(),
       this.pokeModel.deleteMany(),
@@ -155,6 +157,5 @@ export class PokemonService {
       this.statModel.deleteMany(),
     ];
     await Promise.all(prm);
-    return `This action removes a  pokemon`;
   }
 }
