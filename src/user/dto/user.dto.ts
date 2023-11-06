@@ -5,9 +5,9 @@ export class CreateUserDto {
   @IsEmail({})
   email: string;
   @IsString()
-  @Min(4)
-  @Max(10)
   password: string;
+  @IsString()
+  userName: string;
 }
 
 export class UpdateUserDto {}

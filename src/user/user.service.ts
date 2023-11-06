@@ -25,7 +25,8 @@ export class UserService {
         password: hashedPass,
       });
       delete dbUser.password;
-      return user;
+
+      return dbUser;
     } catch (error) {
       console.log('cnat create user');
       console.log(error);

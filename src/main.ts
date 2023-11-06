@@ -5,7 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-
-  await app.listen(3000, () => console.log('http://localhost:3000'));
+  const PORT = process.env.PORT || 5000;
+  await app.listen(PORT, () => console.log(`http://localhost:${PORT}`));
 }
 bootstrap();

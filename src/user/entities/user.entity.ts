@@ -5,16 +5,16 @@ import { HydratedDocument } from 'mongoose';
   timestamps: true,
 })
 export class User {
-  @Prop({ required: true })
+  @Prop()
   firstName: string;
-  @Prop({ required: true })
+  @Prop()
   lastName: string;
   @Prop({ required: true })
   userName: string;
   @Prop({ unique: true, required: true, index: true })
   email: string;
   @Prop({ required: true })
-  password: number;
+  password: string;
   @Prop()
   avatar: string;
 }
