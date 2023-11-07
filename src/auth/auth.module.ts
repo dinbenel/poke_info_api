@@ -12,7 +12,6 @@ import { User, userSchema } from 'src/user/entities/user.entity';
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1d' },
     }),
   ],
   controllers: [AuthController],
