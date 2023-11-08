@@ -5,11 +5,13 @@ import { errMsg } from 'src/constants/errorMessages';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
 import { UserPayload } from 'src/types/userPayload.type';
+import { LoggerService } from 'src/logger/logger.service';
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private readonly log: LoggerService,
   ) {}
 
   async register(userDto: RegisterDto) {
@@ -26,6 +28,7 @@ export class AuthService {
       userName: user.userName,
     });
     tokens['user'] = user;
+    this.log.verbose(`user ${user.email} loged in`, AuthService.name);
     return tokens;
   }
 

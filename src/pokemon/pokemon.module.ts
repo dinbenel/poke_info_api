@@ -7,6 +7,7 @@ import { Sprites, spriteSchema } from './entities/sprite.entity';
 import { Type, typeSchema } from './entities/type.entity';
 import { Move, moveSchema } from './entities/nove.entity';
 import { Stat, stateSchema } from './entities/stat.entity';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Module({
   imports: [
@@ -19,6 +20,6 @@ import { Stat, stateSchema } from './entities/stat.entity';
     ]),
   ],
   controllers: [PokemonController],
-  providers: [PokemonService],
+  providers: [PokemonService, LoggerService],
 })
 export class PokemonModule {}

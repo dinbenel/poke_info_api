@@ -5,11 +5,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { errMsg } from 'src/constants/errorMessages';
 import { hash } from 'bcrypt';
+import { LoggerService } from 'src/logger/logger.service';
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
+    private readonly log: LoggerService,
   ) {}
 
   async create(userDto: CreateUserDto): Promise<UserDocument> {

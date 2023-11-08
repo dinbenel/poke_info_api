@@ -8,6 +8,7 @@ import { Type } from './entities/type.entity';
 import { Move } from './entities/nove.entity';
 import { Stat } from './entities/stat.entity';
 import axios from 'axios';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class PokemonService {
@@ -22,6 +23,7 @@ export class PokemonService {
     private readonly statModel: Model<Stat>,
     @InjectModel(Move.name)
     private readonly moveModel: Model<Move>,
+    private readonly log: LoggerService,
   ) {}
 
   async findAll(): Promise<Pokemon[]> {
@@ -29,8 +31,7 @@ export class PokemonService {
       const pokemon = await this.pokeModel.find().lean().exec();
       return pokemon;
     } catch (error) {
-      console.log('ERROR FIND ALL');
-      console.log(error);
+      this.log.error(`ERROR FIND ALL ${error}`, PokemonService.name);
     }
   }
 
@@ -39,8 +40,7 @@ export class PokemonService {
       const poke = await this.pokeModel.findById(id).lean().exec();
       return poke;
     } catch (error) {
-      console.log('ERROR FIND BY ID');
-      console.log(error);
+      this.log.error(`ERROR FIND BY ID ${error}`, PokemonService.name);
     }
   }
 
@@ -72,7 +72,6 @@ export class PokemonService {
       const types = [];
       for (let t of p.types) {
         const type = await this.typeModel.findOne({ name: t.type.name }).exec();
-
         if (type) {
           types.push({
             _id: type._id,
@@ -87,12 +86,14 @@ export class PokemonService {
           });
         }
       }
+
       const stats = p.stats.reduce((acc, curr) => {
         acc[curr.stat.name] = curr.base_stat;
         acc['name'] = p.name;
         acc['effort'] = curr.effort;
         return acc;
       }, {});
+
       const stat = await this.statModel.findOne({ name: p.name });
       let statId;
       if (stat) {
@@ -126,9 +127,8 @@ export class PokemonService {
       }
       const pokeDbPrm = [];
       const pDb = await this.pokeModel.findOne({ name: p.name });
-      console.log(pDb);
+
       if (pDb) {
-        console.log('DUP');
         continue;
       } else {
         const prm = this.pokeModel.create({
@@ -143,8 +143,7 @@ export class PokemonService {
         });
         pokeDbPrm.push(prm);
       }
-      const resDb = await Promise.all(pokeDbPrm);
-      console.log(resDb);
+      await Promise.all(pokeDbPrm);
     }
   }
 

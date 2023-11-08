@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { LoggerService } from './logger/logger.service';
 
 @Module({
   imports: [
@@ -16,6 +17,6 @@ import { UserModule } from './user/user.module';
     UserModule,
     AuthModule,
   ],
-  providers: [],
+  providers: [LoggerService],
 })
 export class AppModule {}
