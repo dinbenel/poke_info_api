@@ -4,6 +4,7 @@ import { RegisterDto } from './dto/auth.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { LocalGuard } from './guards/local.guard';
 import { RefreshJwtGuard } from './guards/jwtRefresh.guard';
+import { JwtAccessStrategy } from './strategy/jwtAccess.strategy';
 @ApiTags('Authentication')
 @Controller('api/auth')
 export class AuthController {
@@ -14,13 +15,14 @@ export class AuthController {
     return this.authService.register(userDto);
   }
 
+  @UseGuards(JwtAccessStrategy)
   @UseGuards(LocalGuard)
   @Post('login')
   logIn(@Request() req) {
     return this.authService.logIn(req.user);
   }
 
-  @UseGuards(RefreshJwtGuard)
+  // @UseGuards(RefreshJwtGuard)
   @Post('refresh')
   refreshToken(@Request() req) {
     const { email, _id, userName } = req.user;

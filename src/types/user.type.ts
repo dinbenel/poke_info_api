@@ -1,5 +1,4 @@
-import { Interface } from 'readline';
-import { User, UserDocument } from 'src/user/entities/user.entity';
+import { User } from 'src/user/entities/user.entity';
 
 export interface UserDbPayload extends User {
   _id: string;
@@ -15,4 +14,16 @@ export interface UserReturnType {
 export interface Tokens {
   accessToken: string;
   refreshToken: string;
+}
+
+export interface JWTPayload {
+  userName: string;
+  sub: Sub;
+  iat: number;
+  exp: number;
+}
+
+interface Sub {
+  name: string;
+  _id: string;
 }

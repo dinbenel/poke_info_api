@@ -42,9 +42,10 @@ export class AuthService {
     });
 
     this.log.verbose(`user ${user.email} loged in`, AuthService.name);
+    const { password, ...rest } = user;
     return {
       tokens,
-      user,
+      user: rest,
     };
   }
 
@@ -68,7 +69,7 @@ export class AuthService {
         _id,
       },
     };
-
+    //
     const accessPrm = this.jwtService.signAsync(jwtPayload, {
       expiresIn: '1h',
       secret: process.env.JWT_SECRET,
