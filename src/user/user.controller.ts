@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
-import { JWTAccessGuard } from 'src/auth/guards/jwtAccess.guard';
 import { ApiTags } from '@nestjs/swagger';
 @ApiTags('User')
 @Controller('api/user')
@@ -27,7 +26,7 @@ export class UserController {
     // return this.userService.findAll();
   }
 
-  @UseGuards(JWTAccessGuard)
+  // @UseGuards(JWTAccessGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.userService.findById(id);

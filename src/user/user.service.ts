@@ -6,6 +6,7 @@ import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { errMsg } from 'src/constants/errorMessages';
 import { hash } from 'bcrypt';
 import { LoggerService } from 'src/logger/logger.service';
+import { UserDbNoPassword, UserDbPayload } from 'src/types/user.type';
 @Injectable()
 export class UserService {
   constructor(
@@ -13,8 +14,8 @@ export class UserService {
     private readonly userModel: Model<User>,
     private readonly log: LoggerService,
   ) {}
-
-  async create(userDto: CreateUserDto): Promise<UserDocument> {
+  //
+  async create(userDto: CreateUserDto): Promise<UserDbNoPassword> {
     try {
       const user = await this.findByEmail(userDto.email);
 
@@ -27,9 +28,16 @@ export class UserService {
         ...userDto,
         password: hashedPass,
       });
-      const { password, ...res } = dbUser;
-      this.log.verbose(`user ${res.userName} was created`);
-      return res as UserDocument;
+
+      this.log.verbose(`user ${dbUser.userName} was created`);
+      return {
+        _id: dbUser._id.toString(),
+        avatar: dbUser.avatar,
+        email: dbUser.email,
+        firstName: dbUser.firstName,
+        lastName: dbUser.lastName,
+        userName: dbUser.userName,
+      };
     } catch (error) {
       this.log.error(`cant create user ${error}`);
     }

@@ -1,9 +1,9 @@
-import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LogInDto, RegisterDto } from './dto/auth.dto';
-import { JWTRefreshGuard } from './guards/jwtRefresh.guard';
-import { UserPayload } from 'src/types/userPayload.type';
+import { RegisterDto } from './dto/auth.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { LocalGuard } from './guards/local.guard';
+import { RefreshJwtGuard } from './guards/jwtRefresh.guard';
 @ApiTags('Authentication')
 @Controller('api/auth')
 export class AuthController {
@@ -14,15 +14,16 @@ export class AuthController {
     return this.authService.register(userDto);
   }
 
-  @Post('logIn')
-  logIn(@Body() userDto: LogInDto) {
-    return this.authService.logIn(userDto);
+  @UseGuards(LocalGuard)
+  @Post('login')
+  logIn(@Request() req) {
+    return this.authService.logIn(req.user);
   }
 
-  @UseGuards(JWTRefreshGuard)
+  @UseGuards(RefreshJwtGuard)
   @Post('refresh')
-  refreshToken(@Req() req) {
-    const { email, id, userName } = req.user as UserPayload;
-    return this.authService.generateTokens({ email, id, userName });
+  refreshToken(@Request() req) {
+    const { email, _id, userName } = req.user;
+    return this.authService.generateTokens({ email, _id, userName });
   }
 }
