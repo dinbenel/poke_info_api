@@ -9,6 +9,7 @@ import { Move } from './entities/nove.entity';
 import { Stat } from './entities/stat.entity';
 import axios from 'axios';
 import { LoggerService } from 'src/logger/logger.service';
+import { AddFavDto, UpdatePokemonDto } from './dto/pokemon.dto';
 
 @Injectable()
 export class PokemonService {
@@ -41,6 +42,32 @@ export class PokemonService {
       return poke;
     } catch (error) {
       this.log.error(`ERROR FIND BY ID ${error}`, PokemonService.name);
+    }
+  }
+
+  async addToFav({ pokeId, userId }: AddFavDto): Promise<void> {
+    try {
+      await this.pokeModel.findByIdAndUpdate(pokeId, {
+        $push: { likeBy: { userId } },
+      });
+    } catch (error) {
+      this.log.error(`ERROR ADD TO FAV ${error}`, PokemonService.name);
+    }
+  }
+
+  async update({ pokeId, name }: UpdatePokemonDto): Promise<void> {
+    try {
+      const poke = await (
+        await this.pokeModel.findById(pokeId)
+      ).populate('User');
+      poke.creator._id;
+      await this.pokeModel.findByIdAndUpdate(pokeId, {
+        $set: {
+          name,
+        },
+      });
+    } catch (error) {
+      this.log.error(`ERROR UPDATE POKEMON ${error}`, PokemonService.name);
     }
   }
 
@@ -140,6 +167,7 @@ export class PokemonService {
           sprites: spriteId,
           types,
           stats: statId,
+          likeBy: [],
         });
         pokeDbPrm.push(prm);
       }

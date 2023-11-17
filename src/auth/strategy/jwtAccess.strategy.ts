@@ -16,7 +16,7 @@ export class JwtAccessStrategy extends PassportStrategy(
     });
   }
 
-  async validate(payload: JWTPayload) {
+  async validate(payload: any) {
     return { email: payload.userName, _id: payload.sub._id };
   }
 }

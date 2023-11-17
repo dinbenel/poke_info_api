@@ -1,6 +1,6 @@
 export interface Pokemon {
   height: number;
-  id: number;
+  _id: number;
   moves: Move[];
   name: string;
   order: number;

@@ -4,6 +4,8 @@ import { Sprites } from './sprite.entity';
 import { Stat } from './stat.entity';
 import { Type } from './type.entity';
 import { Move } from './nove.entity';
+import { User } from 'src/user/entities/user.entity';
+import { UserDbPayload } from 'src/types/user.type';
 
 @Schema({
   timestamps: true,
@@ -25,6 +27,10 @@ export class Pokemon {
   types: Type[];
   @Prop({ index: true })
   weight: number;
+  @Prop({ type: schema.Types.ObjectId, ref: 'User', default: null })
+  creator: UserDbPayload;
+  @Prop({ type: [{ type: schema.Types.ObjectId, ref: 'User' }] })
+  likeBy: UserDbPayload[];
 }
 
 export type PokemonDocument = HydratedDocument<Pokemon>;
