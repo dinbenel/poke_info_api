@@ -33,3 +33,7 @@ interface Ability {
   name: string;
   url: string;
 }
+
+export interface PokemonQueryParams {
+  limit?: string;
+}

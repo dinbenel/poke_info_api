@@ -1,15 +1,16 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { PokemonService } from './pokemon.service';
 import { ApiTags } from '@nestjs/swagger';
 import { AddFavDto, UpdatePokemonDto } from './dto/pokemon.dto';
+import { PokemonQueryParams } from './types/pokemon.type';
 @ApiTags('Pokemon')
 @Controller('api/pokemon')
 export class PokemonController {
   constructor(private readonly pokemonService: PokemonService) {}
 
   @Get()
-  findAll() {
-    return this.pokemonService.findAll();
+  findAll(@Query() { limit }: PokemonQueryParams) {
+    return this.pokemonService.findAll(limit || '');
   }
 
   @Get(':id')

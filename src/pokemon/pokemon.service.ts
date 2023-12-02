@@ -27,9 +27,14 @@ export class PokemonService {
     private readonly log: LoggerService,
   ) {}
 
-  async findAll(): Promise<Pokemon[]> {
+  async findAll(limit: string): Promise<Pokemon[]> {
     try {
-      const pokemon = await this.pokeModel.find().lean().exec();
+      const pokemon = await this.pokeModel
+        .find({})
+        .limit(parseInt(limit))
+        .populate(['sprites', 'types', 'moves'])
+        .lean()
+        .exec();
       return pokemon;
     } catch (error) {
       this.log.error(`ERROR FIND ALL ${error}`, PokemonService.name);
